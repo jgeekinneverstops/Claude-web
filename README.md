@@ -18,6 +18,14 @@ python3 -m http.server 8000
 - Reveal-on-scroll animations (respects reduced-motion preference)
 - Sections: Hero, About, Projects, Contact
 
+## What's here
+
+- `index.html` + `css/` + `js/` — the personal site
+- `heatlist/` — **Heatlist**, a Miami resale store finder covering streetwear
+  through hard luxury ([readme](heatlist/README.md) ·
+  [business notes](heatlist/BUSINESS.md)). Same no-build approach; open
+  `heatlist/index.html`.
+
 ## Customizing
 
 - **Your name & text** — edit the content in `index.html`

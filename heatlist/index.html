@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find which resale stores near you have heat on the floor right now — rated 1 to 5.">
+  <title>HEATLIST — resale store finder</title>
+  <link rel="stylesheet" href="css/heatlist.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+</head>
+<body>
+
+<div class="demo-banner" role="note">
+  <strong>Demo data.</strong> Stores, ratings and prices on this page are
+  fictional samples used to show how the app works — not real businesses or
+  real reviews.
+</div>
+
+<header class="app-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="#">HEAT<span>LIST</span></a>
+    <div class="search-box">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="search" type="search" placeholder="Search brand, item or store…" autocomplete="off" aria-label="Search">
+    </div>
+    <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+      <span class="ico-light">☀</span><span class="ico-dark">☾</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero-strip">
+    <div>
+      <h1>What's on the floor in <span class="city">Miami</span> right now</h1>
+      <p class="sub">
+        Retail drops. Then it hits the resale floor. Heatlist tells you which
+        shop it landed in, what they're asking, and whether that's a fair number.
+      </p>
+    </div>
+    <dl class="stats" id="stats"></dl>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" role="tab" data-view="items">Heat <span class="count" id="count-items"></span></button>
+    <button class="tab" role="tab" data-view="stores">Stores <span class="count" id="count-stores"></span></button>
+    <button class="tab" role="tab" data-view="map">Map</button>
+    <button class="tab" role="tab" data-view="saved">Saved <span class="count" id="count-saved"></span></button>
+  </nav>
+
+  <section class="filters" id="filters">
+    <div class="chip-row" id="brand-chips" aria-label="Filter by brand"></div>
+    <div class="control-row">
+      <label class="ctl">
+        <span>Category</span>
+        <select id="f-cat">
+          <option value="">All</option>
+          <option>Tops</option><option>Outerwear</option><option>Denim</option>
+          <option>Footwear</option><option>Accessories</option>
+        </select>
+      </label>
+      <label class="ctl">
+        <span>Min heat</span>
+        <select id="f-heat">
+          <option value="0">Any</option>
+          <option value="3">3★ +</option>
+          <option value="4">4★ +</option>
+          <option value="5">5★ only</option>
+        </select>
+      </label>
+      <label class="ctl">
+        <span>Max price</span>
+        <select id="f-price">
+          <option value="0">Any</option>
+          <option value="200">$200</option><option value="500">$500</option>
+          <option value="1000">$1,000</option><option value="5000">$5,000</option>
+        </select>
+      </label>
+      <label class="ctl">
+        <span>Sort</span>
+        <select id="f-sort">
+          <option value="heat">Hottest</option>
+          <option value="deal">Best deal</option>
+          <option value="fresh">Just landed</option>
+          <option value="near">Closest</option>
+          <option value="cheap">Price: low to high</option>
+        </select>
+      </label>
+      <label class="ctl toggle">
+        <input type="checkbox" id="f-open"> <span>Open now</span>
+      </label>
+      <button class="btn-ghost" id="reset">Reset</button>
+    </div>
+  </section>
+
+  <div id="view-items" class="view"><div class="grid" id="items-grid"></div></div>
+  <div id="view-stores" class="view" hidden><div class="grid stores" id="stores-grid"></div></div>
+
+  <div id="view-map" class="view" hidden>
+    <div class="map-shell">
+      <div class="map" id="map">
+        <svg class="map-bg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <pattern id="g" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M10 0H0V10" fill="none" stroke="currentColor" stroke-width="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#g)"/>
+          <path d="M74 0 L70 40 L78 70 L72 100 L100 100 L100 0 Z" class="water"/>
+          <path d="M0 46 H100 M38 0 V100" class="road"/>
+        </svg>
+        <div id="pins"></div>
+      </div>
+      <aside class="map-side" id="map-side">
+        <p class="muted">Tap a pin to see what that store has on the floor.</p>
+      </aside>
+    </div>
+  </div>
+
+  <div id="view-saved" class="view" hidden><div class="grid" id="saved-grid"></div></div>
+
+  <p class="empty" id="empty" hidden>Nothing matches those filters. Loosen one up.</p>
+</main>
+
+<footer class="app-footer">
+  <div class="wrap">
+    <p>HEATLIST — prototype. Ratings shown are demo values, not user reviews.</p>
+    <p><a href="../index.html">← back to site</a> · <a href="README.md">how this works</a></p>
+  </div>
+</footer>
+
+<div class="sheet-backdrop" id="backdrop" hidden></div>
+<aside class="sheet" id="sheet" hidden aria-label="Store details"></aside>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<title>Paycheck to Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#E9ECEF; --surface:#FFFFFF; --surface-2:#F4F6F8; --surface-3:#E4E9ED;
+  --line:#D3DAE1; --line-strong:#B9C4CE;
+  --ink:#0C141D; --ink-2:#5A6878; --ink-3:#7C8B9B;
+  --accent:#17708C; --accent-soft:#DCEDF3; --accent-line:#8FC4D6;
+  --good:#0a8a0a; --warning:#B07500; --critical:#d03b3b;
+  --good-bg:#E4F4E4; --warning-bg:#FBF0DA; --critical-bg:#FAE4E4;
+  --put-in:#2a78d6; --growth:#eb6834;
+  --grid:rgba(12,20,29,.06);
+  --shadow:0 1px 2px rgba(12,20,29,.06), 0 8px 24px -16px rgba(12,20,29,.28);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0C141D; --surface:#141E2A; --surface-2:#1B2836; --surface-3:#22303F;
+    --line:#26364A; --line-strong:#374B63;
+    --ink:#E8EDF2; --ink-2:#8FA1B5; --ink-3:#6E8095;
+    --accent:#3BA9C8; --accent-soft:#12303C; --accent-line:#2A6C82;
+    --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+    --good-bg:#0F2A12; --warning-bg:#33270A; --critical-bg:#331414;
+    --put-in:#3987e5; --growth:#d95926;
+    --grid:rgba(232,237,242,.05);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0C141D; --surface:#141E2A; --surface-2:#1B2836; --surface-3:#22303F;
+  --line:#26364A; --line-strong:#374B63;
+  --ink:#E8EDF2; --ink-2:#8FA1B5; --ink-3:#6E8095;
+  --accent:#3BA9C8; --accent-soft:#12303C; --accent-line:#2A6C82;
+  --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+  --good-bg:#0F2A12; --warning-bg:#33270A; --critical-bg:#331414;
+  --put-in:#3987e5; --growth:#d95926;
+  --grid:rgba(232,237,242,.05);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink); margin:0;
+  font-family:"Public Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 20px 80px}
+h1,h2{font-family:"Chivo",ui-sans-serif,system-ui,sans-serif; text-wrap:balance; margin:0}
+h1{font-weight:900; font-size:clamp(1.85rem,4.6vw,2.7rem); line-height:1.04; letter-spacing:-.03em}
+h2{font-weight:800; font-size:1.2rem; letter-spacing:-.018em}
+p{margin:0}
+.num{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.688rem; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); margin:0;
+}
+
+/* header */
+.top{
+  border-bottom:1px solid var(--line); margin-bottom:16px;
+  background:
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/100% 32px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/32px 100%,
+    var(--surface);
+}
+.top-in{max-width:880px; margin:0 auto; padding:38px 20px 32px}
+.top h1{margin:12px 0 12px}
+.top h1 em{font-style:normal; color:var(--accent)}
+.top p{color:var(--ink-2); max-width:60ch; font-size:1.03rem}
+
+/* card */
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:22px 24px 24px; margin-top:14px; box-shadow:var(--shadow);
+}
+.card > .eyebrow{margin-bottom:9px}
+.card > h2 + p{color:var(--ink-2); margin-top:8px; max-width:62ch; font-size:.94rem}
+
+/* paycheck strip */
+.strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-top:16px}
+.f{display:flex; flex-direction:column; gap:5px; min-width:0}
+.f label{
+  font-family:"IBM Plex Mono",monospace; font-size:.656rem; font-weight:500;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
+}
+.wrapin{position:relative; display:flex; align-items:center}
+.wrapin .sym{position:absolute; left:11px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:.9rem; pointer-events:none}
+.wrapin .sym.r{left:auto; right:11px}
+input[type=number]{
+  width:100%; background:var(--surface-2); color:var(--ink); border:1px solid var(--line);
+  border-radius:2px; padding:9px 11px; font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums; font-size:.95rem; -moz-appearance:textfield;
+}
+.wrapin.has-sym input{padding-left:24px}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* flow bar */
+.flow{display:flex; gap:2px; margin-top:20px; height:38px; border-radius:2px; overflow:hidden; background:var(--surface-3)}
+.flow div{display:flex; align-items:center; justify-content:center; min-width:0; transition:flex-grow .18s}
+.flow span{
+  font-family:"IBM Plex Mono",monospace; font-size:.688rem; font-weight:600;
+  letter-spacing:.04em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 8px;
+}
+.flow .taxes{background:var(--surface-3); color:var(--ink-3)}
+.flow .bills{background:var(--line-strong); color:var(--surface)}
+.flow .invest{background:var(--put-in); color:#fff}
+.flow .spare{background:var(--good); color:#fff}
+.flow-key{display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:.8rem; color:var(--ink-2)}
+.flow-key b{display:inline-flex; align-items:center; gap:6px; font-weight:500}
+.sw{width:10px; height:10px; border-radius:2px; flex-shrink:0}
+
+/* the dial */
+.dial{
+  background:var(--surface); border:1px solid var(--accent-line); border-radius:3px;
+  padding:26px 24px 28px; margin-top:14px; box-shadow:var(--shadow);
+}
+.dial-top{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:14px}
+.dial-amt{font-size:clamp(2rem,6vw,2.9rem); font-weight:600; letter-spacing:-.035em; line-height:1; margin-top:8px}
+.dial-amt small{font-size:.9rem; font-weight:400; color:var(--ink-2); letter-spacing:0}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:28px; background:transparent; cursor:pointer; display:block}
+input[type=range]::-webkit-slider-runnable-track{height:6px; border-radius:3px; background:var(--surface-3)}
+input[type=range]::-moz-range-track{height:6px; border-radius:3px; background:var(--surface-3)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--accent);
+  border:3px solid var(--surface); margin-top:-8px; box-shadow:0 0 0 1px var(--accent);
+}
+input[type=range]::-moz-range-thumb{
+  width:22px; height:22px; border-radius:50%; background:var(--accent);
+  border:3px solid var(--surface); box-shadow:0 0 0 1px var(--accent);
+}
+.scale{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:.7rem; color:var(--ink-3); margin-top:2px}
+
+/* payoff */
+.payoff{
+  margin-top:24px; padding-top:22px; border-top:1px solid var(--line);
+  display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:26px; align-items:start;
+}
+.hero-num{font-size:clamp(2.4rem,8vw,3.9rem); font-weight:600; letter-spacing:-.04em; line-height:.98; color:var(--accent); margin-top:6px}
+.hero-sub{color:var(--ink-2); font-size:.9rem; margin-top:12px; max-width:44ch}
+.mini{display:flex; flex-direction:column; border:1px solid var(--line); border-radius:2px; background:var(--surface-2)}
+.mini div{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:11px 14px; border-bottom:1px solid var(--line)}
+.mini div:last-child{border-bottom:none}
+.mini dt{font-size:.8rem; color:var(--ink-2); margin:0}
+.mini dd{margin:0; font-weight:600; font-size:.95rem; white-space:nowrap}
+
+/* chart */
+figure{margin:22px 0 0}
+.chart-box{position:relative; width:100%}
+.chart-box svg{display:block; width:100%; height:auto; overflow:visible}
+figcaption{font-size:.82rem; color:var(--ink-2); margin-top:12px; max-width:62ch}
+.legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-size:.82rem}
+.legend b{display:inline-flex; align-items:center; gap:7px; font-weight:500; color:var(--ink-2)}
+.tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; z-index:4;
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:2px;
+  padding:8px 11px; font-size:.78rem; box-shadow:var(--shadow); white-space:nowrap;
+}
+.tip strong{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; display:block; font-size:.95rem; margin-top:2px}
+.tip em{font-style:normal; display:block; color:var(--ink-2); font-size:.72rem; margin-top:3px}
+
+/* order steps */
+.steps{list-style:none; padding:0; margin:18px 0 0; counter-reset:s}
+.step{
+  display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:15px; align-items:start;
+  padding:16px 0; border-bottom:1px solid var(--line);
+}
+.step:last-child{border-bottom:none}
+.step::before{
+  counter-increment:s; content:counter(s);
+  font-family:"IBM Plex Mono",monospace; font-size:.813rem; font-weight:600;
+  color:var(--accent); padding-top:2px;
+}
+.step h3{font-family:"Chivo",sans-serif; font-size:.975rem; font-weight:700; margin:0 0 3px; letter-spacing:-.008em}
+.step p{font-size:.865rem; color:var(--ink-2); max-width:58ch}
+.step .amt{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:.9rem; white-space:nowrap; text-align:right; padding-top:2px}
+.step .amt small{display:block; font-family:"Public Sans",sans-serif; font-weight:400; font-size:.7rem; color:var(--ink-3); margin-top:2px}
+.step[data-done="yes"] .amt{color:var(--good)}
+
+.note{
+  border:1px solid var(--accent-line); background:var(--accent-soft);
+  border-radius:3px; padding:18px 20px; margin-top:14px;
+}
+.note .eyebrow{color:var(--accent)}
+.note p{margin-top:8px; max-width:62ch; font-size:.92rem}
+.note p+p{margin-top:9px}
+
+.foot{margin-top:28px; padding-top:18px; border-top:1px solid var(--line); font-size:.79rem; color:var(--ink-3); max-width:66ch}
+.foot p+p{margin-top:7px}
+.vh{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+@media (max-width:760px){
+  .payoff{grid-template-columns:minmax(0,1fr); gap:20px}
+  .card,.dial{padding:20px 18px 22px}
+  .step{grid-template-columns:24px minmax(0,1fr); gap:12px}
+  .step .amt{grid-column:2; text-align:left; padding-top:7px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <p class="eyebrow">One dial &middot; $30/hr, 40 hrs</p>
+    <h1>Every hour you work buys a piece of a <em>machine</em>.</h1>
+    <p>You clear about $2,300 a month after everything. This page does one thing: it shows you what
+      that spare money turns into if you point it at the market instead of letting it sit.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ========== 1. THE PAYCHECK ========== -->
+  <section class="card">
+    <p class="eyebrow">Your month</p>
+    <h2>Where the paycheck goes</h2>
+    <div class="strip">
+      <div class="f"><label for="rate">Hourly rate</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="rate" value="30" min="0" step="0.5"></div></div>
+      <div class="f"><label for="hours">Hours / week</label>
+        <div class="wrapin"><input type="number" id="hours" value="40" min="0" max="90" step="1"></div></div>
+      <div class="f"><label for="tax">Tax bite</label>
+        <div class="wrapin"><span class="sym r">%</span><input type="number" id="tax" value="20" min="0" max="50" step="1"></div></div>
+      <div class="f"><label for="bills">Bills / month</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="bills" value="1815" min="0" step="25"></div></div>
+    </div>
+
+    <div class="flow" id="flow" role="img" aria-labelledby="flow-desc">
+      <div class="taxes" style="flex-grow:1040"><span>Taxes</span></div>
+      <div class="bills" style="flex-grow:1815"><span>Bills</span></div>
+      <div class="invest" style="flex-grow:2000"><span>Invested</span></div>
+      <div class="spare" style="flex-grow:345"><span>Spare</span></div>
+    </div>
+    <p id="flow-desc" class="vh"></p>
+    <div class="flow-key" id="flow-key"></div>
+  </section>
+
+  <!-- ========== 2. THE DIAL ========== -->
+  <section class="dial">
+    <div class="dial-top">
+      <div>
+        <p class="eyebrow">The only dial that matters</p>
+        <div class="dial-amt num" id="v-invest">$2,000 <small>invested per month</small></div>
+      </div>
+    </div>
+    <input type="range" id="invest" min="0" max="2345" step="25" value="2000"
+           aria-label="Amount invested per month">
+    <div class="scale"><span>$0</span><span id="sc-mid">$1,170</span><span id="sc-max">$2,345 max</span></div>
+
+    <div class="payoff">
+      <div>
+        <p class="eyebrow">What it becomes by age <span id="ret-age">60</span></p>
+        <div class="hero-num num" id="v-final">$3.9M</div>
+        <p class="hero-sub" id="s-final"></p>
+      </div>
+      <dl class="mini">
+        <div><dt>You put in</dt><dd class="num" id="m-in">$864,000</dd></div>
+        <div><dt>Market adds</dt><dd class="num" id="m-growth">$3,023,000</dd></div>
+        <div><dt>In 10 years</dt><dd class="num" id="m-10">$346,000</dd></div>
+        <div><dt>In 20 years</dt><dd class="num" id="m-20">$1,042,000</dd></div>
+      </dl>
+    </div>
+
+    <div class="strip" style="margin-top:22px">
+      <div class="f"><label for="age">Your age now</label>
+        <div class="wrapin"><input type="number" id="age" value="24" min="16" max="70" step="1"></div></div>
+      <div class="f"><label for="retire">Stop at age</label>
+        <div class="wrapin"><input type="number" id="retire" value="60" min="30" max="85" step="1"></div></div>
+      <div class="f"><label for="ret">Return / year</label>
+        <div class="wrapin"><span class="sym r">%</span><input type="number" id="ret" value="7" min="0" max="15" step="0.5"></div></div>
+    </div>
+
+    <figure>
+      <div class="chart-box" id="chart-box">
+        <svg id="chart" viewBox="0 0 700 290" role="img" aria-labelledby="chart-title chart-desc"></svg>
+        <h3 id="chart-title" class="vh">Account value over time, split into money you contributed and market growth</h3>
+        <p id="chart-desc" class="vh"></p>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="legend">
+        <b><span class="sw" style="background:var(--put-in)"></span>Money you put in</b>
+        <b><span class="sw" style="background:var(--growth)"></span>What the market added</b>
+      </div>
+      <figcaption id="cap"></figcaption>
+    </figure>
+  </section>
+
+  <!-- ========== 3. THE ORDER ========== -->
+  <section class="card">
+    <p class="eyebrow">Do it in this order</p>
+    <h2>Four accounts, then stop thinking about it</h2>
+    <p>Every dollar goes to the next unfilled bucket. Set each one to auto-transfer on payday so the
+      decision happens once, not fifty-two times a year.</p>
+
+    <ol class="steps">
+      <li class="step">
+        <div>
+          <h3>401(k), but only up to the match</h3>
+          <p>If your employer matches, that match is an instant 50–100% return — nothing else on this
+            page comes close. Find out this week what the match is and contribute exactly that much.
+            If there's no match, skip straight to step 2.</p>
+        </div>
+        <span class="amt" id="a-401k">ask HR<small>highest priority</small></span>
+      </li>
+      <li class="step" id="st-ef">
+        <div>
+          <h3>Cash cushion — three months of bills</h3>
+          <p>In a high-yield savings account, separate from checking, no debit card attached. This is
+            what stops a bad month from becoming credit card debt. Fill it once, then leave it alone.</p>
+        </div>
+        <span class="amt" id="a-ef">$5,445<small>target</small></span>
+      </li>
+      <li class="step">
+        <div>
+          <h3>Roth IRA — max it every year</h3>
+          <p>You open it yourself at Fidelity, Schwab, or Vanguard in about fifteen minutes. Money goes
+            in after tax and every dollar of growth comes out tax-free at retirement. At your income
+            this is the single best account available to you. Opening it is not investing — buy an
+            index fund inside it, or it just sits in cash.</p>
+        </div>
+        <span class="amt" id="a-roth">$583<small>per month</small></span>
+      </li>
+      <li class="step">
+        <div>
+          <h3>Regular brokerage for the rest</h3>
+          <p>Same brokerage, ordinary taxable account, no contribution limit. One total-market index
+            fund is a complete portfolio — VTI, VOO, FXAIX or SWTSX all do the same job for
+            near-zero fees. Buy it automatically every payday and never look at it.</p>
+        </div>
+        <span class="amt" id="a-brok">$1,417<small>per month</small></span>
+      </li>
+    </ol>
+  </section>
+
+  <div class="note">
+    <p class="eyebrow">The part people get wrong</p>
+    <p>The money you put in is the small half. At your dial setting you contribute
+      <strong id="n-in">$864,000</strong> over your working life and end with
+      <strong id="n-total">$3.9M</strong> — the other <strong id="n-growth">$3.0M</strong> is growth
+      you did nothing to earn except start early and not touch it.</p>
+    <p>That gap is entirely a function of <em>time</em>, which is the one input you can't buy more of
+      later. Waiting five years to start costs you more than any raise you're likely to get.</p>
+  </div>
+
+  <div class="note" style="border-color:var(--line); background:var(--surface-2)">
+    <p class="eyebrow" style="color:var(--ink-3)">Two things this page assumes</p>
+    <p><strong>7% a year is a historical average, not a promise.</strong> That's roughly what a broad
+      US index fund has returned above inflation over the long run — so these figures are in today's
+      buying power. Real years are lumpy: some are −20%. The average only shows up if you stay in
+      through the bad ones.</p>
+    <p><strong>Check the current Roth IRA limit before you set the transfer.</strong> The field above
+      defaults to $7,000; the IRS adjusts it for inflation, so confirm this year's number and update it.</p>
+  </div>
+
+  <div class="foot">
+    <p>Everything recalculates from the fields on this page. Your numbers save in this browser only —
+      nothing is sent anywhere.</p>
+    <p>A planning tool and one person's opinion, not licensed financial or tax advice.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id)};
+  var KEY="p2p.v1";
+  var FIELDS=["rate","hours","tax","bills","invest","age","retire","ret","roth"];
+
+  function n(id){var v=parseFloat($(id).value); return isFinite(v)&&v>=0?v:0}
+  function money(v,dp){
+    dp=dp||0;
+    var s=Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp});
+    return (v<0?"−$":"$")+s;
+  }
+  function big(v){
+    if(v>=1e6) return "$"+(v/1e6).toFixed(v>=1e7?1:2)+"M";
+    if(v>=1e3) return "$"+Math.round(v/1e3)+"k";
+    return money(v);
+  }
+  function save(){
+    try{var o={}; FIELDS.forEach(function(f){var e=$(f); if(e)o[f]=e.value});
+      localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}
+  }
+  function load(){
+    try{var r=localStorage.getItem(KEY); if(!r)return; var o=JSON.parse(r);
+      FIELDS.forEach(function(f){var e=$(f); if(e&&o&&typeof o[f]==="string"&&o[f]!=="")e.value=o[f]});
+    }catch(e){}
+  }
+
+  var ROTH_LIMIT=7000;
+
+  function model(){
+    var gross=n("rate")*n("hours")*52/12;
+    var taxes=gross*(n("tax")/100);
+    var take=gross-taxes;
+    var bills=n("bills");
+    var surplus=Math.max(0,take-bills);
+    var invest=Math.min(n("invest"),surplus);
+    var spare=surplus-invest;
+    var age=n("age"), retire=Math.max(n("retire"),age+1);
+    var years=retire-age;
+    var r=n("ret")/100;
+    return {gross:gross,taxes:taxes,take:take,bills:bills,surplus:surplus,
+            invest:invest,spare:spare,age:age,retire:retire,years:years,r:r};
+  }
+
+  /* future value of a monthly contribution stream */
+  function fv(pm,r,years){
+    var m=r/12, k=years*12;
+    if(pm<=0) return 0;
+    if(m===0) return pm*k;
+    return pm*((Math.pow(1+m,k)-1)/m);
+  }
+
+  /* ---------- chart: stacked area, contributions vs growth ---------- */
+  var W=700,H=290,P={t:16,r:58,b:32,l:56};
+  function drawChart(m){
+    var svg=$("chart");
+    var pts=[],i,yrs=Math.max(1,m.years);
+    for(i=0;i<=yrs;i++){
+      var contrib=m.invest*12*i;
+      var total=fv(m.invest,m.r,i);
+      pts.push({y:i,c:contrib,t:total});
+    }
+    var hi=Math.max(pts[yrs].t,1)*1.06;
+    var iw=W-P.l-P.r, ih=H-P.t-P.b;
+    var X=function(i){return P.l+(i/yrs)*iw};
+    var Y=function(v){return P.t+ih-(v/hi)*ih};
+
+    var cs=getComputedStyle(document.documentElement);
+    var cLine=cs.getPropertyValue("--line").trim();
+    var cInk3=cs.getPropertyValue("--ink-3").trim();
+    var cSurf=cs.getPropertyValue("--surface").trim();
+    var cIn=cs.getPropertyValue("--put-in").trim();
+    var cGr=cs.getPropertyValue("--growth").trim();
+
+    var s="";
+    /* recessive gridlines */
+    for(i=0;i<=4;i++){
+      var gv=hi*(i/4), gy=Y(gv);
+      s+='<line x1="'+P.l+'" y1="'+gy.toFixed(1)+'" x2="'+(W-P.r)+'" y2="'+gy.toFixed(1)+
+         '" stroke="'+cLine+'" stroke-width="1"/>';
+      s+='<text x="'+(P.l-9)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" fill="'+cInk3+
+         '" font-size="11" font-family="IBM Plex Mono, monospace">'+big(gv).replace("$","")+'</text>';
+    }
+    /* x labels */
+    var xs=yrs<=10?2:yrs<=20?5:yrs<=40?10:15;
+    for(i=0;i<=yrs;i+=xs){
+      s+='<text x="'+X(i).toFixed(1)+'" y="'+(H-P.b+19)+'" text-anchor="middle" fill="'+cInk3+
+         '" font-size="11" font-family="IBM Plex Mono, monospace">'+(i===0?"now":"+"+i+"y")+'</text>';
+    }
+
+    function band(lowKey,highKey,fill,op){
+      var d="",j;
+      for(j=0;j<=yrs;j++) d+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j][highKey]).toFixed(1);
+      for(j=yrs;j>=0;j--) d+="L"+X(j).toFixed(1)+" "+Y(lowKey==="zero"?0:pts[j][lowKey]).toFixed(1);
+      return '<path d="'+d+'Z" fill="'+fill+'" opacity="'+op+'"/>';
+    }
+    /* growth band sits on top of the contributions band, 2px surface gap between them */
+    s+=band("c","t",cGr,"0.85");
+    s+=band("zero","c",cIn,"0.95");
+    /* boundary line = the 2px spacer between the two fills */
+    var db="",j;
+    for(j=0;j<=yrs;j++) db+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j].c).toFixed(1);
+    s+='<path d="'+db+'" fill="none" stroke="'+cSurf+'" stroke-width="2"/>';
+    var dt="";
+    for(j=0;j<=yrs;j++) dt+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j].t).toFixed(1);
+    s+='<path d="'+dt+'" fill="none" stroke="'+cGr+'" stroke-width="2" stroke-linejoin="round"/>';
+    /* emphasised endpoint + direct label */
+    s+='<circle cx="'+X(yrs).toFixed(1)+'" cy="'+Y(pts[yrs].t).toFixed(1)+'" r="4.5" fill="'+cGr+
+       '" stroke="'+cSurf+'" stroke-width="2"/>';
+    s+='<text x="'+(W-P.r+8)+'" y="'+(Y(pts[yrs].t)+4).toFixed(1)+'" fill="'+cGr+
+       '" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace">'+big(pts[yrs].t)+'</text>';
+
+    for(i=0;i<=yrs;i++){
+      s+='<rect class="hit" data-i="'+i+'" x="'+(X(i)-iw/yrs/2).toFixed(1)+'" y="'+P.t+
+         '" width="'+(iw/yrs).toFixed(1)+'" height="'+ih+'" fill="transparent"/>';
+    }
+    svg.innerHTML=s; svg.__p=pts; svg.__X=X; svg.__Y=Y;
+
+    $("chart-desc").textContent="Stacked area chart over "+yrs+" years. Contributions reach "+
+      money(pts[yrs].c)+" and total value reaches "+money(pts[yrs].t)+".";
+  }
+
+  var tip=$("tip"), box=$("chart-box");
+  $("chart").addEventListener("mousemove",function(ev){
+    var t=ev.target; if(!t.classList||!t.classList.contains("hit"))return;
+    var svg=$("chart"), i=+t.getAttribute("data-i"), p=svg.__p[i]; if(!p)return;
+    var rect=box.getBoundingClientRect(), sc=rect.width/W;
+    tip.innerHTML=(i===0?"Today":"In "+i+(i===1?" year":" years"))+
+      "<strong>"+money(p.t)+"</strong><em>"+money(p.c)+" in &middot; "+money(p.t-p.c)+" growth</em>";
+    tip.style.opacity="1";
+    var tw=tip.offsetWidth, px=svg.__X(i)*sc, py=svg.__Y(p.t)*sc;
+    tip.style.left=Math.max(0,Math.min(rect.width-tw,px-tw/2))+"px";
+    tip.style.top=Math.max(0,py-tip.offsetHeight-12)+"px";
+  });
+  $("chart").addEventListener("mouseleave",function(){tip.style.opacity="0"});
+
+  /* ---------- render ---------- */
+  function render(){
+    var m=model();
+
+    /* slider bounds track the surplus */
+    var sl=$("invest");
+    sl.max=Math.max(25,Math.round(m.surplus/25)*25);
+    if(+sl.value>+sl.max) sl.value=sl.max;
+    m=model();
+    $("sc-mid").textContent=money(Math.round(m.surplus/2));
+    $("sc-max").textContent=money(m.surplus)+" max";
+    $("v-invest").innerHTML=money(m.invest)+' <small>invested per month</small>';
+
+    /* flow bar */
+    var f=$("flow").children;
+    var segs=[[m.taxes,"Taxes"],[m.bills,"Bills"],[m.invest,"Invested"],[m.spare,"Spare"]];
+    segs.forEach(function(seg,k){
+      /* a zero segment collapses out entirely — otherwise the flex gap leaves a stray sliver */
+      f[k].hidden = seg[0] <= 0;
+      f[k].style.flexGrow = Math.max(seg[0], 0);
+      f[k].querySelector("span").textContent = seg[1];
+    });
+    var swatch=["background:var(--surface-3);border:1px solid var(--line-strong)",
+                "background:var(--line-strong)","background:var(--put-in)","background:var(--good)"];
+    $("flow-key").innerHTML=segs.map(function(seg,k){
+      return '<b><span class="sw" style="'+swatch[k]+'"></span>'+seg[1]+' '+money(seg[0])+'</b>';
+    }).join("");
+    $("flow-desc").textContent="Of "+money(m.gross)+" earned each month, "+money(m.taxes)+
+      " goes to taxes, "+money(m.bills)+" to bills, "+money(m.invest)+" is invested and "+
+      money(m.spare)+" is left spare.";
+
+    /* payoff */
+    var total=fv(m.invest,m.r,m.years);
+    var put=m.invest*12*m.years;
+    $("ret-age").textContent=m.retire;
+    $("v-final").textContent=big(total);
+    $("m-in").textContent=money(put);
+    $("m-growth").textContent=money(total-put);
+    $("m-10").textContent=money(fv(m.invest,m.r,Math.min(10,m.years)));
+    $("m-20").textContent=money(fv(m.invest,m.r,Math.min(20,m.years)));
+    $("s-final").textContent=m.invest>0
+      ? "Investing "+money(m.invest)+" every month for "+m.years+" years at "+
+        (m.r*100).toFixed(1)+"% a year, in today's buying power."
+      : "Move the dial. At $0 a month the machine never gets built.";
+
+    $("n-in").textContent=money(put);
+    $("n-total").textContent=big(total);
+    $("n-growth").textContent=big(Math.max(0,total-put));
+
+    /* the four buckets */
+    var ef=m.bills*3;
+    $("a-ef").innerHTML=money(ef)+"<small>"+
+      (m.surplus>0?"about "+Math.max(1,Math.ceil(ef/m.surplus))+" months to fill":"target")+"</small>";
+    var rothMo=Math.min(m.invest,ROTH_LIMIT/12);
+    $("a-roth").innerHTML=money(rothMo)+"<small>per month</small>";
+    $("a-brok").innerHTML=money(Math.max(0,m.invest-rothMo))+"<small>per month</small>";
+
+    $("cap").textContent="Blue is your own money going in; orange is growth stacked on top. Notice "+
+      "where orange overtakes blue — that's the point the machine starts out-earning you.";
+
+    drawChart(m);
+    save();
+  }
+
+  load();
+  FIELDS.forEach(function(f){var e=$(f); if(e)e.addEventListener("input",render)});
+  render();
+  window.addEventListener("resize",function(){drawChart(model())});
+  if(window.matchMedia){
+    var mq=window.matchMedia("(prefers-color-scheme: dark)");
+    if(mq.addEventListener)mq.addEventListener("change",function(){drawChart(model())});
+  }
+  new MutationObserver(function(){drawChart(model())})
+    .observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script>

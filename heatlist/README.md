@@ -1,7 +1,12 @@
-# HEATLIST
+# HEATLIST — Miami
 
-A store finder for the resale side of streetwear: **which shop near me has heat
-on the floor right now, what are they asking, and is that a fair number.**
+A finder for Miami's resale floor, from streetwear to hard luxury: **which store
+has it today, how fast that piece moves in this city, and who's asking the
+least for it.**
+
+Miami is the launch market and the only city with data. `CITY` in `js/data.js`
+is the single place the market is defined — neighborhoods, map, filters and
+copy all read from it.
 
 Static HTML/CSS/JS — no build step, no dependencies. Open `index.html`, or:
 
@@ -10,55 +15,85 @@ python3 -m http.server 8000   # from the repo root
 # → http://localhost:8000/heatlist/
 ```
 
-## What the prototype does
+## What it covers
 
-| | |
+Twelve stores from Aventura down to Coral Gables, and nine categories — tops,
+outerwear, denim, footwear, **bags, jewelry, watches, eyewear**, accessories.
+Chrome Hearts and Corteiz sit in the same index as Louis Vuitton, Cartier,
+Valley and Rolex, because in Miami they sit on the same blocks and often in the
+same store.
+
+| View | What it answers |
 |---|---|
-| **Heat feed** | Every tracked piece, sorted by demand, deal, freshness, distance or price |
-| **Deal score** | Asking price vs. recent market comp, shown as *% under / over comp* |
-| **Store cards** | Three separate 1–5 ratings, because "good store" means different things |
-| **Map** | Pins shaded by live floor heat; tap for that store's inventory |
+| **On the floor** | Every listing in the city, filtered by brand, neighborhood, category, heat, price |
+| **What's selling** | Every model ranked by units sold and days-to-clear, with the price spread across stores |
+| **Stores** | Three ratings per store, two of them computed |
+| **Map** | Pins shaded by live floor heat; hover or select for the name |
 | **Saved** | Watchlist in `localStorage` — the stand-in for push alerts |
-| **Filters** | Brand chips, category, min heat, max price, open-now, free-text search |
 
-## The three ratings (this is the actual product idea)
+## Rankings come from what sells
 
-One star rating is useless here, because a store is good or bad at three
-unrelated things:
+Nobody types a star rating in. Heat is derived in `heatOf()` from two measured
+facts about the Miami market:
 
-- **Heat on floor** — how much of what people want is physically in there today.
-- **Pays sellers** — what they hand you when *you* walk in to sell. This is the
-  number resellers care about and nobody publishes.
-- **Fair pricing** — are they at, under, or over market when you buy.
+- `sold30` — units of that model sold across tracked stores in 30 days
+- `days` — median days one piece sits before it clears
 
-A tourist shop can be 5★ on heat and 2★ on payout. Collapsing that into one
-number throws away the only information worth opening an app for.
+They're blended, not averaged, at 60/40. Volume without speed is a slow mover
+that happens to be common; speed without volume is a one-off. A piece is hot
+only when it does both — the Neverfull tops the list because it does 34 units
+in 30 days *and* clears in three.
 
-Floor heat is *computed*, not typed in: `liveHeat()` in `js/app.js` averages a
-store's three hottest pieces, so the rating decays on its own when good stock
-sells and nothing replaces it. A store cannot coast on an old reputation.
+This also means a rating decays on its own. A store that sold its good stock
+and replaced it with nothing drops down the map by tomorrow, with nobody
+editing anything.
+
+## "Who has the best prices" is computed too
+
+Listings are normalized against canonical **models**, so the same Neverfull at
+four stores is directly comparable. From that:
+
+- **Best price in Miami** — badge on the cheapest listing of any model
+- **Price spread** — how much more the dearest store asks than the cheapest
+  (30% on the Neverfull in the demo data)
+- **Store price rating** — `priceIndex()` takes the median of
+  `store price ÷ city median` across every model that store shares with a
+  rival, so a shop is measured only against stores selling the same thing.
+  Single-source pieces are excluded; they can't tell you anything.
+
+Only **"pays sellers"** is a reported number rather than a computed one. It
+can't be derived from listings — it's what they hand *you* when you walk in to
+sell — and it's the number resellers care about most.
 
 ## Data
 
-`js/data.js` is **fictional demo data** — invented store names, invented
-ratings, invented prices. Nothing in it describes a real business, and the
-banner at the top of the page says so. Do not ship it as-is.
+`js/data.js` is **fictional demo data** — invented store names, invented sales
+figures, invented prices. Nothing in it describes a real business, and the
+banner on the page says so. Do not ship it as-is.
 
-The shapes in that file are the real contract though. Both `STORES` and `ITEMS`
-are JSDoc-typed; replace the two arrays with `fetch()` calls against your own
-API and nothing else in `app.js` changes.
+Three tables, and the split is deliberate:
 
-The one field that decides whether this product lives or dies is
-`Store.verified` — when inventory was last confirmed. The UI surfaces it on
-every store card ("Checked today" / "Checked 6d ago") because a locator with
-stale stock is worse than no locator.
+```
+CITY    the market. One for now.
+MODELS  the canonical piece ("LV Neverfull MM") + how it sells in this city
+STOCK   one listing: this model, in this store, at this price
+```
+
+Heat belongs to the model (a fact about city-wide demand), price belongs to the
+listing (a fact about one store). That separation is what lets the app answer
+"what's moving in Miami" and "who has it cheapest" from the same rows.
+
+All three are JSDoc-typed. Replace them with `fetch()` calls and nothing else
+changes.
+
+The field that decides whether this lives or dies is `Store.verified` — when
+inventory was last confirmed. Every store card surfaces it ("Checked today" /
+"Checked 6d ago") because a locator with stale stock is worse than no locator.
 
 ## Next, in order
 
-1. Replace demo data with a real feed (see `BUSINESS.md` — start with one
-   neighborhood, walked by hand).
-2. Real map tiles. Swap the stylized SVG for MapLibre + a free tile source;
-   `Store.x/y` become `lat/lng`.
-3. Push alerts on saved brands — the retention loop.
-4. Store-facing upload so shops post their own stock, with your verification
-   pass on top.
+1. Real data for the 12–15 Miami stores (see `BUSINESS.md`).
+2. Real map tiles — MapLibre + OpenStreetMap; `Store.x/y` become `lat/lng`.
+3. Push alerts on saved models and brands — the retention loop.
+4. Store-facing upload, so shops post their own stock with your verification on top.
+5. Only then, city #2.

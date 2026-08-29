@@ -21,9 +21,10 @@ python3 -m http.server 8000
 ## What's here
 
 - `index.html` + `css/` + `js/` — the personal site
-- `heatlist/` — **Heatlist**, a resale streetwear store finder
-  ([readme](heatlist/README.md) · [business notes](heatlist/BUSINESS.md)).
-  Same no-build approach; open `heatlist/index.html`.
+- `heatlist/` — **Heatlist**, a Miami resale store finder covering streetwear
+  through hard luxury ([readme](heatlist/README.md) ·
+  [business notes](heatlist/BUSINESS.md)). Same no-build approach; open
+  `heatlist/index.html`.
 
 ## Customizing
 

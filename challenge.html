@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A disciplined trade journal for a $500 to $10,000 crypto challenge — logs the catalyst behind every entry and measures whether it actually had edge.">
+  <title>Challenge Tracker — $500 → $10,000</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/challenge.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav-logo">Juan<span class="accent">.</span></a>
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="#log" class="nav-link">Log</a></li>
+        <li><a href="#edge" class="nav-link">Edge</a></li>
+        <li>
+          <button class="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-icon-light">☀️</span>
+            <span class="theme-icon-dark">🌙</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container tracker">
+
+    <section class="tracker-head">
+      <p class="hero-kicker">Challenge</p>
+      <h1 class="tracker-title">$500 <span class="accent">→</span> $10,000</h1>
+      <p class="tracker-sub">
+        Every entry gets logged with the callout, tweet, or announcement that
+        triggered it. After ~30 trades this page tells you which sources
+        actually make money — and which ones just feel exciting.
+      </p>
+    </section>
+
+    <!-- ---------- Reality check ---------- -->
+    <section class="reality" id="reality">
+      <h2>Read this before the first trade</h2>
+      <ul>
+        <li><strong>$500 → $10,000 is a 20&times; return (+1,900%).</strong> That is not a
+          stretch goal, it is an outlier outcome. Most accounts attempting it
+          go to zero, because the leverage required to get there fast is the
+          same leverage that liquidates you.</li>
+        <li><strong>The goal is not a deadline.</strong> Nothing on this page has a
+          date attached on purpose. A challenge with a clock forces bad
+          size, and bad size is what actually ends challenges.</li>
+        <li><strong>Only fund it with money you can lose entirely</strong> —
+          not rent, not borrowed, not credit. If losing the $500 changes your
+          month, the position size is already wrong.</li>
+        <li><strong>Tweets and announcements are usually late.</strong> By the time a
+          call is public, the move is often priced in and you are the exit
+          liquidity. The source table below is how you find out whether that
+          is happening to you specifically.</li>
+        <li><strong>Nobody is trading this account but you.</strong> This tool records
+          and grades decisions; it does not make them and it has no market
+          access.</li>
+      </ul>
+    </section>
+
+    <!-- ---------- Scoreboard ---------- -->
+    <section class="scoreboard">
+      <div class="progress-card">
+        <div class="progress-top">
+          <div>
+            <p class="stat-label">Current equity</p>
+            <p class="equity" id="equity">$500.00</p>
+          </div>
+          <div class="progress-right">
+            <p class="stat-label">Multiple</p>
+            <p class="multiple" id="multiple">1.00&times;</p>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-note" id="progressNote">0% of the way there</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat"><p class="stat-label">Closed trades</p><p class="stat-value" id="statTrades">0</p></div>
+        <div class="stat"><p class="stat-label">Win rate</p><p class="stat-value" id="statWin">—</p></div>
+        <div class="stat"><p class="stat-label">Expectancy</p><p class="stat-value" id="statExp">—</p><p class="stat-hint">per trade, in R</p></div>
+        <div class="stat"><p class="stat-label">Total R</p><p class="stat-value" id="statR">0.0R</p></div>
+        <div class="stat"><p class="stat-label">Max drawdown</p><p class="stat-value" id="statDD">0%</p></div>
+        <div class="stat"><p class="stat-label">Open risk</p><p class="stat-value" id="statOpenRisk">$0</p></div>
+      </div>
+    </section>
+
+    <!-- ---------- Equity curve ---------- -->
+    <section class="panel">
+      <h2 class="panel-title">Equity curve</h2>
+      <div class="curve-wrap"><svg id="curve" viewBox="0 0 800 240" preserveAspectRatio="none" role="img" aria-label="Equity curve across closed trades"></svg></div>
+      <p class="empty-note" id="curveEmpty">No closed trades yet. The curve appears once you close your first position.</p>
+    </section>
+
+    <!-- ---------- The honest math ---------- -->
+    <section class="panel math-panel">
+      <h2 class="panel-title">What it would actually take</h2>
+      <p class="panel-sub">Recalculated from <em>your</em> logged results, not from a fantasy win rate.</p>
+      <div class="math-grid">
+        <div class="math-cell">
+          <p class="stat-label">Trades still needed</p>
+          <p class="math-value" id="mathTrades">—</p>
+          <p class="stat-hint" id="mathTradesHint">Log some closed trades first.</p>
+        </div>
+        <div class="math-cell">
+          <p class="stat-label">Losses in a row to halve the account</p>
+          <p class="math-value" id="mathRuin">—</p>
+          <p class="stat-hint">At your average risk per trade.</p>
+        </div>
+        <div class="math-cell">
+          <p class="stat-label">Average risk per trade</p>
+          <p class="math-value" id="mathRisk">—</p>
+          <p class="stat-hint">As a share of equity at entry.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Milestones ---------- -->
+    <section class="panel">
+      <h2 class="panel-title">Milestone ladder</h2>
+      <p class="panel-sub">Each rung is a similar percentage gain — which is why the last one is as hard as the first.</p>
+      <ul class="milestones" id="milestones"></ul>
+    </section>
+
+    <!-- ---------- Source edge ---------- -->
+    <section class="panel" id="edge">
+      <h2 class="panel-title">Does the callout actually have edge?</h2>
+      <p class="panel-sub">
+        Expectancy by catalyst type. A source needs roughly 20+ closed trades
+        before this number means anything — below that you are reading noise.
+      </p>
+      <div class="table-wrap">
+        <table class="data-table" id="sourceTable">
+          <thead>
+            <tr><th>Source</th><th>Trades</th><th>Win rate</th><th>Total R</th><th>Expectancy</th><th>Verdict</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty-note" id="sourceEmpty">Nothing to compare yet.</p>
+    </section>
+
+    <!-- ---------- New trade ---------- -->
+    <section class="panel" id="log">
+      <h2 class="panel-title">Log a trade</h2>
+      <form id="tradeForm" class="trade-form" autocomplete="off">
+        <div class="field">
+          <label for="f-date">Date</label>
+          <input type="date" id="f-date" required>
+        </div>
+        <div class="field">
+          <label for="f-asset">Asset</label>
+          <input type="text" id="f-asset" placeholder="BTC" required>
+        </div>
+        <div class="field">
+          <label for="f-side">Direction</label>
+          <select id="f-side">
+            <option value="long">Long</option>
+            <option value="short">Short</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-source">Catalyst</label>
+          <select id="f-source">
+            <option value="tweet">Tweet / X post</option>
+            <option value="callout">Callout (group, Discord, TG)</option>
+            <option value="announcement">Official announcement</option>
+            <option value="listing">Exchange listing</option>
+            <option value="onchain">On-chain / flow data</option>
+            <option value="technical">Own technical setup</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field field-wide">
+          <label for="f-ref">Source link or handle</label>
+          <input type="text" id="f-ref" placeholder="@handle, URL, or where you saw it">
+        </div>
+        <div class="field field-wide">
+          <label for="f-thesis">Thesis — why this, why now, what would prove you wrong</label>
+          <textarea id="f-thesis" rows="2" placeholder="Written BEFORE entry. If you can't write it, you don't have a trade."></textarea>
+        </div>
+        <div class="field">
+          <label for="f-entry">Entry price</label>
+          <input type="number" id="f-entry" step="any" min="0" required>
+        </div>
+        <div class="field">
+          <label for="f-stop">Stop price</label>
+          <input type="number" id="f-stop" step="any" min="0" required>
+        </div>
+        <div class="field">
+          <label for="f-target">Target price</label>
+          <input type="number" id="f-target" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="f-size">Position size (units)</label>
+          <input type="number" id="f-size" step="any" min="0" required>
+        </div>
+
+        <div class="sizer" id="sizer">
+          <p class="sizer-line">Set an entry and a stop to see your risk.</p>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add trade</button>
+          <button type="button" class="btn btn-outline" id="suggestSize">Suggest size at <span id="riskPctLabel">2</span>% risk</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ---------- Trade log ---------- -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">Trade log</h2>
+        <div class="panel-tools">
+          <button class="btn btn-outline btn-sm" id="exportJson">Export JSON</button>
+          <button class="btn btn-outline btn-sm" id="exportCsv">Export CSV</button>
+          <label class="btn btn-outline btn-sm file-btn">Import<input type="file" id="importJson" accept="application/json" hidden></label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="tradeTable">
+          <thead>
+            <tr><th>Date</th><th>Asset</th><th>Side</th><th>Catalyst</th><th>Entry</th><th>Stop</th><th>Exit</th><th>P&amp;L</th><th>R</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty-note" id="tradeEmpty">No trades logged yet.</p>
+    </section>
+
+    <!-- ---------- Settings ---------- -->
+    <section class="panel settings">
+      <h2 class="panel-title">Settings</h2>
+      <div class="settings-grid">
+        <div class="field">
+          <label for="s-start">Starting capital</label>
+          <input type="number" id="s-start" step="any" min="1" value="500">
+        </div>
+        <div class="field">
+          <label for="s-goal">Goal</label>
+          <input type="number" id="s-goal" step="any" min="1" value="10000">
+        </div>
+        <div class="field">
+          <label for="s-risk">Max risk per trade (%)</label>
+          <input type="number" id="s-risk" step="0.1" min="0.1" max="100" value="2">
+        </div>
+      </div>
+      <p class="settings-note">
+        Stored only in this browser's local storage — nothing is uploaded and
+        no exchange is connected. Export regularly so a cleared cache doesn't
+        take your history with it.
+      </p>
+      <button class="btn btn-outline btn-sm danger" id="resetAll">Reset everything</button>
+    </section>
+
+    <footer class="tracker-footer">
+      <p>
+        A journal, not financial advice. It has no market access and places no
+        orders. Crypto trading can lose you every dollar you put in, and
+        leveraged trading can lose it faster than you can react.
+      </p>
+    </footer>
+  </main>
+
+  <script src="js/challenge.js"></script>
+</body>
+</html>

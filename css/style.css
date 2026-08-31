@@ -288,6 +288,8 @@ body {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+a.project-card { text-decoration: none; color: inherit; }
+
 .project-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 32px rgba(20, 22, 40, 0.14);

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Work out what $1,200 can realistically earn, track what you put it into, and stage the climb to a weekly income target.">
+  <title>Capital Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/tracker.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <div class="wordmark">Capital<span>.</span>Ledger</div>
+    <div class="masthead-meta">
+      <button class="ghost-btn" id="theme-btn" type="button">Dark</button>
+      <button class="ghost-btn" id="reset-btn" type="button">Reset data</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ The answer, before anything else ============ -->
+  <section class="verdict wrap">
+    <div class="verdict-grid">
+      <div>
+        <p class="eyebrow">The question</p>
+        <h1>Can $1,200 pay you <em>$2,500 a week?</em></h1>
+        <p class="verdict-lede">
+          Not from investing it. Paying yourself $2,500 a week out of $1,200 means
+          earning back more than twice your entire balance every seven days, forever.
+          No market, fund, or asset does that. Anything advertising it is a scam.
+        </p>
+        <p class="verdict-lede">
+          What $1,200 can do is buy tools, inventory, or a first month of costs for a
+          small operating business — where the money you make comes from work you sell,
+          not from a return on the balance. That path to $2,500 a week is real, and it
+          is measured in years, not weeks. This ledger tracks both sides honestly:
+          what your capital earns, and what your ventures earn.
+        </p>
+        <p class="assumption-note">
+          Figures update live from the numbers you enter. Venture estimates are
+          typical U.S. owner-operator ranges, not promises — your market, pricing,
+          and hours will move them. Nothing here is financial advice.
+        </p>
+      </div>
+
+      <div class="math-card">
+        <div class="math-card-head">
+          <p class="eyebrow">Reality check</p>
+        </div>
+        <div class="math-inputs">
+          <div class="field">
+            <label for="in-capital">Starting capital</label>
+            <input type="number" id="in-capital" min="0" step="50" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="in-target">Weekly income target</label>
+            <input type="number" id="in-target" min="0" step="50" inputmode="decimal">
+          </div>
+        </div>
+        <dl class="math-rows" id="math-rows"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Where you actually are ============ -->
+  <section class="section wrap" id="progress">
+    <div class="section-head">
+      <div>
+        <h2>Where you are today</h2>
+        <p>Enter what you are genuinely clearing each week — profit after costs, not revenue.</p>
+      </div>
+      <div class="field" style="max-width:180px">
+        <label for="in-current">Current weekly profit</label>
+        <input type="number" id="in-current" min="0" step="25" inputmode="decimal">
+      </div>
+    </div>
+    <div class="goalbar">
+      <div class="goalbar-top">
+        <p class="goalbar-figure" id="goal-figure"></p>
+        <p class="eyebrow" id="goal-pct"></p>
+      </div>
+      <div class="track" role="progressbar" id="goal-track" aria-valuemin="0" aria-valuemax="100">
+        <div class="track-fill" id="goal-fill" style="width:0%"></div>
+      </div>
+      <p class="goalbar-foot" id="goal-foot"></p>
+    </div>
+  </section>
+
+  <!-- ============ The chart ============ -->
+  <section class="section wrap" id="growth">
+    <div class="section-head">
+      <div>
+        <h2>What the capital alone does</h2>
+        <p>
+          Your starting capital compounded at two rates, against the balance you would
+          need for investment returns alone to cover the target. The gap is the point.
+        </p>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-controls">
+        <div class="field">
+          <label for="in-monthly">Added each month</label>
+          <input type="number" id="in-monthly" min="0" step="25" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="in-years">Years shown</label>
+          <input type="number" id="in-years" min="5" max="50" step="5" inputmode="numeric">
+        </div>
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="background:var(--s1)"></span> Index fund, 10%/yr</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--s2)"></span> Exceptional, 25%/yr</span>
+          <span class="legend-item"><span class="swatch dashed"></span> Balance needed for target</span>
+        </div>
+      </div>
+
+      <div class="chart-shell" id="chart-shell">
+        <svg id="chart" viewBox="0 0 900 400" role="img"
+             aria-label="Projected balance over time versus the balance required to fund the weekly target"></svg>
+        <div class="tooltip" id="chart-tip" aria-hidden="true"></div>
+      </div>
+      <p class="chart-note" id="chart-note"></p>
+    </div>
+  </section>
+
+  <!-- ============ Holdings ============ -->
+  <section class="section wrap" id="holdings">
+    <div class="section-head">
+      <div>
+        <h2>Holdings</h2>
+        <p>Everything the capital is sitting in. Edit any cell directly; totals recalculate as you type.</p>
+      </div>
+      <button class="btn" id="add-holding" type="button">Add holding</button>
+    </div>
+    <div class="table-shell">
+      <table>
+        <colgroup>
+          <col class="c-name"><col class="c-type"><col class="c-money">
+          <col class="c-money"><col class="c-money"><col class="c-money"><col class="c-act">
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Position</th>
+            <th scope="col">Type</th>
+            <th scope="col" class="col-num">Invested</th>
+            <th scope="col" class="col-num">Value now</th>
+            <th scope="col" class="col-num">Gain / loss</th>
+            <th scope="col" class="col-num">Return</th>
+            <th scope="col" class="col-act"><span class="visually-hidden">Remove</span></th>
+          </tr>
+        </thead>
+        <tbody id="holdings-body"></tbody>
+        <tfoot id="holdings-foot"></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ Ventures ============ -->
+  <section class="section wrap" id="ventures">
+    <div class="section-head">
+      <div>
+        <h2>Ventures you can start at this budget</h2>
+        <p>
+          Each card carries its own startup cost, time to first money, and a typical
+          monthly profit range. The meter shows how far the midpoint of that range gets
+          you toward the weekly target. Click a status pill to move a venture along.
+        </p>
+      </div>
+      <button class="btn" id="add-venture" type="button">Add venture</button>
+    </div>
+    <div class="ventures" id="ventures-grid"></div>
+  </section>
+
+  <!-- ============ Ladder ============ -->
+  <section class="section wrap" id="ladder">
+    <div class="section-head">
+      <div>
+        <h2>The climb, one rung at a time</h2>
+        <p>
+          These are ordered because the order matters — each rung is funded by the one
+          below it. Tick a rung when your weekly profit has held there for a full month.
+        </p>
+      </div>
+    </div>
+    <ol class="ladder" id="ladder-list"></ol>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>
+      <strong>Capital Ledger</strong> — a planning tool, not financial advice. Everything
+      you type stays in this browser's local storage; nothing is uploaded anywhere.
+    </p>
+    <p>
+      Investment return figures are long-run historical averages and are not guaranteed.
+      Venture profit ranges are typical owner-operator outcomes and assume you do the work.
+      Before putting business money into anything, check licensing and insurance
+      requirements where you live, and keep business and personal accounts separate.
+    </p>
+  </div>
+</footer>
+
+<script src="js/tracker.js"></script>
+</body>
+</html>

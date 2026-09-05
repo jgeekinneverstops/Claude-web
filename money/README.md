@@ -42,3 +42,34 @@ set-aside; overtime is W-2 wages and is taxed `SE_SURCHARGE` points lower,
 since the employer still pays half of Social Security.
 
 A planning tool, not financial advice.
+
+---
+
+# The Paper Trade Journal
+
+`money/journal.html` — a teaching page for keeping a trading journal by hand.
+No JavaScript; it is a document, not a tool.
+
+## What it covers
+
+- **Process vs. outcome** — the 2×2 that separates skill from luck, and why
+  "broke the plan and got paid" is the most expensive quadrant
+- **Page 1 rules card** — risk per trade, daily stop, trade cap, signed and
+  dated before the first entry
+- **The trade sheet** — blank template beside a filled worked example, split
+  into fields written *before* entry and fields written *after* exit
+- **The weekly review sheet**
+- **The arithmetic** — R multiples, expectancy, and what a real edge implies
+  about how long a 10× actually takes at each position size
+
+## Print
+
+`@media print` hides the prose and emits the three fillable sheets, one per
+page, black on white. Sections marked `.no-print` are teaching material;
+`.print-sheet` sections are the forms.
+
+## A note on the numbers
+
+The example trade and the two sample books are worked examples chosen to
+demonstrate the arithmetic — including one book that wins 55% of its trades
+and still loses money. They are not predictions or a strategy to copy.

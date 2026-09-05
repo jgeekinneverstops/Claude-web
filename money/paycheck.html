@@ -1,0 +1,725 @@
+<title>Paycheck to Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;800;900&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#E9ECEF; --surface:#FFFFFF; --surface-2:#F4F6F8; --surface-3:#E4E9ED;
+  --line:#D3DAE1; --line-strong:#B9C4CE;
+  --ink:#0C141D; --ink-2:#5A6878; --ink-3:#7C8B9B;
+  --accent:#17708C; --accent-soft:#DCEDF3; --accent-line:#8FC4D6;
+  --good:#0a8a0a; --warning:#B07500;
+  --put-in:#2a78d6; --growth:#eb6834;
+  --grid:rgba(12,20,29,.06);
+  --shadow:0 1px 2px rgba(12,20,29,.06), 0 8px 24px -16px rgba(12,20,29,.28);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0C141D; --surface:#141E2A; --surface-2:#1B2836; --surface-3:#22303F;
+    --line:#26364A; --line-strong:#374B63;
+    --ink:#E8EDF2; --ink-2:#8FA1B5; --ink-3:#6E8095;
+    --accent:#3BA9C8; --accent-soft:#12303C; --accent-line:#2A6C82;
+    --good:#0ca30c; --warning:#fab219;
+    --put-in:#3987e5; --growth:#d95926;
+    --grid:rgba(232,237,242,.05);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0C141D; --surface:#141E2A; --surface-2:#1B2836; --surface-3:#22303F;
+  --line:#26364A; --line-strong:#374B63;
+  --ink:#E8EDF2; --ink-2:#8FA1B5; --ink-3:#6E8095;
+  --accent:#3BA9C8; --accent-soft:#12303C; --accent-line:#2A6C82;
+  --good:#0ca30c; --warning:#fab219;
+  --put-in:#3987e5; --growth:#d95926;
+  --grid:rgba(232,237,242,.05);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink); margin:0;
+  font-family:"Public Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px; margin:0 auto; padding:0 20px 80px}
+h1,h2{font-family:"Chivo",ui-sans-serif,system-ui,sans-serif; text-wrap:balance; margin:0}
+h1{font-weight:900; font-size:clamp(1.85rem,4.6vw,2.7rem); line-height:1.04; letter-spacing:-.03em}
+h2{font-weight:800; font-size:1.2rem; letter-spacing:-.018em}
+p{margin:0}
+.num{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.688rem; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); margin:0;
+}
+
+.top{
+  border-bottom:1px solid var(--line); margin-bottom:16px;
+  background:
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/100% 32px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/32px 100%,
+    var(--surface);
+}
+.top-in{max-width:900px; margin:0 auto; padding:38px 20px 32px}
+.top h1{margin:12px 0 12px}
+.top h1 em{font-style:normal; color:var(--accent)}
+.top p{color:var(--ink-2); max-width:60ch; font-size:1.03rem}
+
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:22px 24px 24px; margin-top:14px; box-shadow:var(--shadow);
+}
+.card > .eyebrow{margin-bottom:9px}
+.card > h2 + p{color:var(--ink-2); margin-top:8px; max-width:64ch; font-size:.94rem}
+
+.strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-top:16px}
+.f{display:flex; flex-direction:column; gap:5px; min-width:0}
+.f label{
+  font-family:"IBM Plex Mono",monospace; font-size:.656rem; font-weight:500;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
+}
+.wrapin{position:relative; display:flex; align-items:center}
+.wrapin .sym{position:absolute; left:11px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:.9rem; pointer-events:none}
+.wrapin .sym.r{left:auto; right:11px}
+input[type=number]{
+  width:100%; background:var(--surface-2); color:var(--ink); border:1px solid var(--line);
+  border-radius:2px; padding:9px 11px; font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums; font-size:.95rem; -moz-appearance:textfield;
+}
+.wrapin.has-sym input{padding-left:24px}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.flow{display:flex; gap:2px; margin-top:20px; height:38px; border-radius:2px; overflow:hidden; background:var(--surface-3)}
+.flow div{display:flex; align-items:center; justify-content:center; min-width:0}
+.flow span{
+  font-family:"IBM Plex Mono",monospace; font-size:.688rem; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 8px;
+}
+.flow .bills{background:var(--line-strong); color:var(--surface)}
+.flow .invest{background:var(--put-in); color:#fff}
+.flow .spare{background:var(--good); color:#fff}
+.flow-key{display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:.8rem; color:var(--ink-2)}
+.flow-key b{display:inline-flex; align-items:center; gap:6px; font-weight:500}
+.sw{width:10px; height:10px; border-radius:2px; flex-shrink:0}
+
+/* ---- income streams ---- */
+.stream{
+  display:grid; grid-template-columns:minmax(0,1fr) 108px 130px; gap:18px;
+  align-items:start; padding:18px 0; border-bottom:1px solid var(--line);
+}
+.stream:last-of-type{border-bottom:none}
+.stream h3{font-family:"Chivo",sans-serif; font-size:.975rem; font-weight:700; margin:0 0 3px; letter-spacing:-.008em}
+.stream p{font-size:.85rem; color:var(--ink-2); max-width:56ch}
+.stream .caveat{color:var(--warning); font-size:.8rem; margin-top:5px; display:block}
+.stream .out{text-align:right}
+.stream .out .big{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:1.05rem; white-space:nowrap}
+.stream .out .sub{font-size:.72rem; color:var(--ink-3); display:block; margin-top:2px; line-height:1.4}
+.stream .out-mo{
+  font-family:"IBM Plex Mono",monospace; font-size:.813rem; font-weight:600;
+  margin-top:7px; display:block; line-height:1.45;
+}
+.stream .out-mo small{display:block; font-family:"Public Sans",sans-serif; font-weight:400; font-size:.7rem; color:var(--ink-3); margin-top:1px}
+.stream .by60{
+  text-align:right; font-family:"IBM Plex Mono",monospace; font-weight:600;
+  font-size:1.05rem; color:var(--accent); white-space:nowrap;
+}
+.stream .by60 small{display:block; font-family:"Public Sans",sans-serif; font-weight:400; font-size:.7rem; color:var(--ink-3); margin-top:2px; line-height:1.4}
+.stream.passive{background:var(--surface-2); margin:0 -14px; padding-left:14px; padding-right:14px; border-radius:2px}
+.stream-head{
+  display:grid; grid-template-columns:minmax(0,1fr) 108px 130px; gap:18px;
+  padding-bottom:8px; border-bottom:1px solid var(--line-strong); margin-top:18px;
+}
+.stream-head span{
+  font-family:"IBM Plex Mono",monospace; font-size:.656rem; font-weight:500;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3); text-align:right;
+}
+.stream-head span:first-child{text-align:left}
+.stream-total{
+  display:grid; grid-template-columns:minmax(0,1fr) 108px 130px; gap:18px;
+  padding-top:16px; border-top:2px solid var(--line-strong); margin-top:4px; align-items:baseline;
+}
+.stream-total .lab{font-weight:700; font-size:1rem}
+.stream-total .v{text-align:right; font-family:"IBM Plex Mono",monospace; font-weight:700; font-size:1.05rem}
+.stream-total .v.acc{color:var(--accent)}
+
+.dial{
+  background:var(--surface); border:1px solid var(--accent-line); border-radius:3px;
+  padding:26px 24px 28px; margin-top:14px; box-shadow:var(--shadow);
+}
+.dial-amt{font-size:clamp(2rem,6vw,2.9rem); font-weight:600; letter-spacing:-.035em; line-height:1; margin-top:8px}
+.dial-amt small{font-size:.9rem; font-weight:400; color:var(--ink-2); letter-spacing:0}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:28px; background:transparent; cursor:pointer; display:block; margin-top:14px}
+input[type=range]::-webkit-slider-runnable-track{height:6px; border-radius:3px; background:var(--surface-3)}
+input[type=range]::-moz-range-track{height:6px; border-radius:3px; background:var(--surface-3)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--accent);
+  border:3px solid var(--surface); margin-top:-8px; box-shadow:0 0 0 1px var(--accent);
+}
+input[type=range]::-moz-range-thumb{
+  width:22px; height:22px; border-radius:50%; background:var(--accent);
+  border:3px solid var(--surface); box-shadow:0 0 0 1px var(--accent);
+}
+.scale{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:.7rem; color:var(--ink-3); margin-top:2px}
+
+.payoff{
+  margin-top:24px; padding-top:22px; border-top:1px solid var(--line);
+  display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:26px; align-items:start;
+}
+.hero-num{font-size:clamp(2.4rem,8vw,3.9rem); font-weight:600; letter-spacing:-.04em; line-height:.98; color:var(--accent); margin-top:6px}
+.hero-sub{color:var(--ink-2); font-size:.9rem; margin-top:12px; max-width:44ch}
+.mini{display:flex; flex-direction:column; border:1px solid var(--line); border-radius:2px; background:var(--surface-2)}
+.mini div{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:11px 14px; border-bottom:1px solid var(--line)}
+.mini div:last-child{border-bottom:none}
+.mini dt{font-size:.8rem; color:var(--ink-2); margin:0}
+.mini dd{margin:0; font-weight:600; font-size:.95rem; white-space:nowrap}
+
+figure{margin:22px 0 0}
+.chart-box{position:relative; width:100%}
+.chart-box svg{display:block; width:100%; height:auto; overflow:visible}
+figcaption{font-size:.82rem; color:var(--ink-2); margin-top:12px; max-width:62ch}
+.legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-size:.82rem}
+.legend b{display:inline-flex; align-items:center; gap:7px; font-weight:500; color:var(--ink-2)}
+.tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; z-index:4;
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:2px;
+  padding:8px 11px; font-size:.78rem; box-shadow:var(--shadow); white-space:nowrap;
+}
+.tip strong{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; display:block; font-size:.95rem; margin-top:2px}
+.tip em{font-style:normal; display:block; color:var(--ink-2); font-size:.72rem; margin-top:3px}
+
+.steps{list-style:none; padding:0; margin:18px 0 0; counter-reset:s}
+.step{
+  display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:15px; align-items:start;
+  padding:16px 0; border-bottom:1px solid var(--line);
+}
+.step:last-child{border-bottom:none}
+.step::before{
+  counter-increment:s; content:counter(s);
+  font-family:"IBM Plex Mono",monospace; font-size:.813rem; font-weight:600;
+  color:var(--accent); padding-top:2px;
+}
+.step h3{font-family:"Chivo",sans-serif; font-size:.975rem; font-weight:700; margin:0 0 3px; letter-spacing:-.008em}
+.step p{font-size:.865rem; color:var(--ink-2); max-width:58ch}
+.step .amt{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:.9rem; white-space:nowrap; text-align:right; padding-top:2px}
+.step .amt small{display:block; font-family:"Public Sans",sans-serif; font-weight:400; font-size:.7rem; color:var(--ink-3); margin-top:2px}
+
+.note{border:1px solid var(--accent-line); background:var(--accent-soft); border-radius:3px; padding:18px 20px; margin-top:14px}
+.note .eyebrow{color:var(--accent)}
+.note p{margin-top:8px; max-width:64ch; font-size:.92rem}
+.note p+p{margin-top:9px}
+.note.plain{border-color:var(--line); background:var(--surface-2)}
+.note.plain .eyebrow{color:var(--ink-3)}
+
+.foot{margin-top:28px; padding-top:18px; border-top:1px solid var(--line); font-size:.79rem; color:var(--ink-3); max-width:66ch}
+.foot p+p{margin-top:7px}
+.vh{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+@media (max-width:780px){
+  .payoff{grid-template-columns:minmax(0,1fr); gap:20px}
+  .card,.dial{padding:20px 18px 22px}
+  .step{grid-template-columns:24px minmax(0,1fr); gap:12px}
+  .step .amt{grid-column:2; text-align:left; padding-top:7px}
+  .stream{grid-template-columns:minmax(0,1fr) 96px; gap:12px}
+  .stream .out-mo{
+  font-family:"IBM Plex Mono",monospace; font-size:.813rem; font-weight:600;
+  margin-top:7px; display:block; line-height:1.45;
+}
+.stream .out-mo small{display:block; font-family:"Public Sans",sans-serif; font-weight:400; font-size:.7rem; color:var(--ink-3); margin-top:1px}
+.stream .by60{grid-column:1/-1; text-align:left; padding-top:4px}
+  .stream .by60 small{display:inline; margin-left:6px}
+  .stream-head,.stream-total{grid-template-columns:minmax(0,1fr) 96px; gap:12px}
+  .stream-head span:last-child,.stream-total .v.acc{display:none}
+  .stream.passive{margin:0 -10px; padding-left:10px; padding-right:10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <p class="eyebrow">Four streams &middot; one dial</p>
+    <h1>Sell more hours, then buy a <em>machine</em> with them.</h1>
+    <p>Three of the streams below cost you time. The fourth doesn't, and it's the only one that
+      eventually replaces the other three. This page shows what each is worth per month — and what
+      it's worth if you invest it instead of spending it.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ========== 1. THE MONTH ========== -->
+  <section class="card">
+    <p class="eyebrow">Your month</p>
+    <h2>Start with the day job</h2>
+    <div class="strip">
+      <div class="f"><label for="net">Take-home / month</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="net" value="4300" min="0" step="50"></div></div>
+      <div class="f"><label for="rate">Your hourly rate</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="rate" value="30" min="0" step="0.5"></div></div>
+      <div class="f"><label for="bills">Bills / month</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="bills" value="1815" min="0" step="25"></div></div>
+      <div class="f"><label for="sidetax">Self-employed tax set-aside</label>
+        <div class="wrapin"><span class="sym r">%</span><input type="number" id="sidetax" value="27" min="0" max="50" step="1"></div></div>
+    </div>
+  </section>
+
+  <!-- ========== 2. THE STREAMS ========== -->
+  <section class="card">
+    <p class="eyebrow">Streams two, three, four &mdash; and five</p>
+    <h2>Ways to add income</h2>
+    <p>Set each one to what you'd actually commit to. The right-hand column is the part nobody shows
+      you: what that monthly amount becomes by age <span id="s-age">60</span> if it goes straight into
+      the market instead of into your checking account.</p>
+
+    <div class="stream-head">
+      <span>Stream</span><span>Per month</span><span>If invested</span>
+    </div>
+
+    <div class="stream">
+      <div>
+        <h3>Overtime at your day job</h3>
+        <p>The highest hourly rate available to you, and the only one with no startup cost, no
+          customers and no tax paperwork. At time-and-a-half your hour is worth
+          <span class="num" id="ot-rate">$45</span> — more than almost any side hustle pays after
+          you subtract the hours it really takes.</p>
+        <span class="caveat" id="ot-caveat">Check whether your employer actually offers it, and whether hours are capped. Taxed as normal wages, so it keeps about eight points more than the two streams below — your employer still pays half your Social Security.</span>
+      </div>
+      <div class="f">
+        <label for="ot">Extra hrs / wk</label>
+        <div class="wrapin"><input type="number" id="ot" value="4" min="0" max="30" step="1"></div>
+        <span class="out-mo" id="ot-mo"></span>
+      </div>
+      <div class="by60" id="ot-by60">$1.26M<small>by 60 if invested</small></div>
+    </div>
+
+    <div class="stream">
+      <div>
+        <h3>Resale — the thing you've already proven</h3>
+        <p>You bought a beanie at $275 and can sell it near $450. That's a real skill and most people
+          don't have it. The limit isn't listing, it's <em>sourcing</em>: finding items that actually
+          carry that margin takes the time. Budget about two hours per item all in — hunting, photos,
+          listing, packing, shipping.</p>
+        <span class="caveat">Each item ties up cash until it sells. At ~$275 a piece, <span id="re-cap">$1,375</span> of your money is sitting in inventory.</span>
+      </div>
+      <div class="f">
+        <label for="re">Items / month</label>
+        <div class="wrapin"><input type="number" id="re" value="5" min="0" max="40" step="1"></div>
+        <label for="reprofit" style="margin-top:6px">Profit each</label>
+        <div class="wrapin has-sym"><span class="sym">$</span><input type="number" id="reprofit" value="90" min="0" step="5"></div>
+        <span class="out-mo" id="re-mo"></span>
+      </div>
+      <div class="by60" id="re-by60">$656k<small>by 60 if invested</small></div>
+    </div>
+
+    <div class="stream">
+      <div>
+        <h3>Contract work through your business account</h3>
+        <p>You already have a business checking account, which means you've done the annoying part.
+          Whatever skill your day job pays $<span class="num" id="ct-base">30</span> an hour for, the
+          same work billed directly usually goes for
+          <span class="num" id="ct-rate">$52</span>. Weekends and evenings, invoiced, not hourly-waged.</p>
+        <span class="caveat">You pay both halves of Social Security on this — that's why the set-aside above is higher than your W-2 tax rate. Put it in a separate account the day you're paid.</span>
+      </div>
+      <div class="f">
+        <label for="ct">Hrs / month</label>
+        <div class="wrapin"><input type="number" id="ct" value="12" min="0" max="120" step="2"></div>
+        <span class="out-mo" id="ct-mo"></span>
+      </div>
+      <div class="by60" id="ct-by60">$885k<small>by 60 if invested</small></div>
+    </div>
+
+    <div class="stream passive">
+      <div>
+        <h3>The portfolio itself &mdash; the one that costs no hours</h3>
+        <p>A total-market index fund pays out roughly 1.3% a year in dividends on top of its growth.
+          Today that's <span class="num" id="div-now">pocket change</span>. That's the point: it starts
+          tiny and ends up larger than everything above it, and it never asks you to work a Saturday.
+          The three streams above exist to make this one bigger, faster.</p>
+      </div>
+      <div class="f">
+        <label for="divyield">Yield</label>
+        <div class="wrapin"><span class="sym r">%</span><input type="number" id="divyield" value="1.3" min="0" max="8" step="0.1"></div>
+        <span class="out-mo" id="div-mo"></span>
+      </div>
+      <div class="by60" id="div-by60">$8,265<small>per month, at 60</small></div>
+    </div>
+
+    <div class="stream-total">
+      <span class="lab">Added on top of the day job</span>
+      <span class="v" id="t-month">$1,440</span>
+      <span class="v acc" id="t-by60">$2.80M</span>
+    </div>
+
+    <div class="note plain" style="margin-top:20px">
+      <p class="eyebrow">Notice what the numbers say</p>
+      <p>All three time-based streams land within a few dollars an hour of each other — roughly
+        <strong id="hr-band">$34&ndash;45 an hour</strong> after tax. Your labour is worth about the same
+        wherever you sell it, so the honest question isn't "which hustle" but
+        <strong>how many extra hours you're willing to sell</strong>. Right now that's
+        <strong id="extra-hrs">39 hours a month</strong> on top of your 173, which is a
+        <strong id="week-hrs">49-hour week</strong>.</p>
+      <p>This is also why the flashy options are usually worse. Anything promising far more per hour is
+        either taking a risk you can't see or isn't paying what it claims.</p>
+    </div>
+  </section>
+
+  <!-- ========== 3. THE DIAL ========== -->
+  <section class="dial">
+    <p class="eyebrow">Total income, one dial</p>
+    <div class="dial-amt num" id="v-invest">$3,900 <small>invested per month</small></div>
+    <input type="range" id="invest" min="0" max="3925" step="25" value="3900" aria-label="Amount invested per month">
+    <div class="scale"><span>$0</span><span id="sc-mid"></span><span id="sc-max"></span></div>
+
+    <div class="flow" id="flow" role="img" aria-labelledby="flow-desc">
+      <div class="bills"><span>Bills</span></div>
+      <div class="invest"><span>Invested</span></div>
+      <div class="spare"><span>Spare</span></div>
+    </div>
+    <p id="flow-desc" class="vh"></p>
+    <div class="flow-key" id="flow-key"></div>
+
+    <div class="payoff">
+      <div>
+        <p class="eyebrow">What it becomes by age <span id="ret-age">60</span></p>
+        <div class="hero-num num" id="v-final">$7.6M</div>
+        <p class="hero-sub" id="s-final"></p>
+      </div>
+      <dl class="mini">
+        <div><dt>You put in</dt><dd class="num" id="m-in"></dd></div>
+        <div><dt>Market adds</dt><dd class="num" id="m-growth"></dd></div>
+        <div><dt>In 10 years</dt><dd class="num" id="m-10"></dd></div>
+        <div><dt>In 20 years</dt><dd class="num" id="m-20"></dd></div>
+      </dl>
+    </div>
+
+    <div class="strip" style="margin-top:22px">
+      <div class="f"><label for="age">Your age now</label>
+        <div class="wrapin"><input type="number" id="age" value="24" min="16" max="70" step="1"></div></div>
+      <div class="f"><label for="retire">Stop at age</label>
+        <div class="wrapin"><input type="number" id="retire" value="60" min="30" max="85" step="1"></div></div>
+      <div class="f"><label for="ret">Return / year</label>
+        <div class="wrapin"><span class="sym r">%</span><input type="number" id="ret" value="7" min="0" max="15" step="0.5"></div></div>
+    </div>
+
+    <figure>
+      <div class="chart-box" id="chart-box">
+        <svg id="chart" viewBox="0 0 700 290" role="img" aria-labelledby="chart-title chart-desc"></svg>
+        <h3 id="chart-title" class="vh">Account value over time, split into money contributed and market growth</h3>
+        <p id="chart-desc" class="vh"></p>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="legend">
+        <b><span class="sw" style="background:var(--put-in)"></span>Money you put in</b>
+        <b><span class="sw" style="background:var(--growth)"></span>What the market added</b>
+      </div>
+      <figcaption id="cap"></figcaption>
+    </figure>
+  </section>
+
+  <!-- ========== 4. THE ORDER ========== -->
+  <section class="card">
+    <p class="eyebrow">Do it in this order</p>
+    <h2>Three accounts, then stop thinking about it</h2>
+    <p>No 401(k) at your job, so the Roth is your best tax shelter and it's yours to open — nobody
+      has to offer it to you. Set each transfer to fire automatically on payday.</p>
+
+    <ol class="steps">
+      <li class="step">
+        <div>
+          <h3>Cash cushion — three months of bills</h3>
+          <p>High-yield savings, separate bank from checking, no debit card. This is what stops a slow
+            month or a car repair from turning into credit card debt. Fill it once and leave it alone —
+            it's insurance, not an investment.</p>
+        </div>
+        <span class="amt" id="a-ef"></span>
+      </li>
+      <li class="step">
+        <div>
+          <h3>Roth IRA — max it every single year</h3>
+          <p>Open it yourself at Fidelity, Schwab or Vanguard in about fifteen minutes. Money goes in
+            after tax and every dollar it grows into comes out tax-free at retirement. Given no 401(k),
+            this is the best account available to you and the limit doesn't roll over — a year you skip
+            is gone permanently. <strong>Opening it is not investing.</strong> Buy an index fund inside
+            it or the money just sits there as cash.</p>
+        </div>
+        <span class="amt" id="a-roth"></span>
+      </li>
+      <li class="step">
+        <div>
+          <h3>Regular brokerage for everything above the limit</h3>
+          <p>Same brokerage, ordinary taxable account, no cap on contributions. One total-market index
+            fund is already a complete portfolio — VTI, VOO, FXAIX or SWTSX all do the same job for
+            nearly no fee. Automate the buy every payday and then don't look at it.</p>
+        </div>
+        <span class="amt" id="a-brok"></span>
+      </li>
+    </ol>
+
+    <div class="note" style="margin-top:20px">
+      <p class="eyebrow">A note on the business account</p>
+      <p>Once contract work is regular, ask an accountant about a <strong>Solo 401(k)</strong> or
+        <strong>SEP-IRA</strong>. Both let a self-employed person shelter far more per year than a Roth
+        IRA allows — tens of thousands rather than a few. You don't need it at
+        <span class="num" id="ct-now">$624</span> a month, but it's the reason growing the contract
+        stream is worth more than it looks.</p>
+    </div>
+  </section>
+
+  <div class="note plain">
+    <p class="eyebrow">Two things this page assumes</p>
+    <p><strong>7% a year is a historical average, not a promise.</strong> Roughly what a broad US index
+      fund has returned above inflation over the long run, so these figures are in today's buying power.
+      Real years are lumpy — some are −20%. The average only shows up for people who stay in through
+      the bad ones.</p>
+    <p><strong>Check this year's Roth IRA limit before you set the transfer.</strong> The page uses
+      $7,000; the IRS adjusts it for inflation, so confirm the current number.</p>
+  </div>
+
+  <div class="foot">
+    <p>Everything recalculates from the fields on this page. Your numbers save in this browser only —
+      nothing is sent anywhere.</p>
+    <p>A planning tool and one person's opinion, not licensed financial or tax advice.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id)};
+  var KEY="p2p.v2";
+  var FIELDS=["net","rate","bills","sidetax","ot","re","reprofit","ct","divyield",
+              "invest","age","retire","ret"];
+  var ROTH_LIMIT=7000, OT_MULT=1.5, CT_MULT=1.75, HRS_PER_ITEM=2, INV_PER_ITEM=275, SE_SURCHARGE=8;
+
+  function n(id){var v=parseFloat($(id).value); return isFinite(v)&&v>=0?v:0}
+  function money(v,dp){
+    dp=dp||0;
+    return (v<0?"−$":"$")+Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  }
+  function big(v){
+    if(v>=1e6) return "$"+(v/1e6).toFixed(v>=1e7?1:2)+"M";
+    if(v>=1e3) return "$"+Math.round(v/1e3)+"k";
+    return money(v);
+  }
+  function save(){try{var o={};FIELDS.forEach(function(f){var e=$(f);if(e)o[f]=e.value});
+    localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+  function load(){try{var r=localStorage.getItem(KEY);if(!r)return;var o=JSON.parse(r);
+    FIELDS.forEach(function(f){var e=$(f);if(e&&o&&typeof o[f]==="string"&&o[f]!=="")e.value=o[f]})}catch(e){}}
+
+  function fv(pm,r,years){
+    var m=r/12,k=years*12;
+    if(pm<=0||k<=0) return 0;
+    if(m===0) return pm*k;
+    return pm*((Math.pow(1+m,k)-1)/m);
+  }
+
+  function model(){
+    var rate=n("rate"), keep=1-n("sidetax")/100;
+    var years=Math.max(1,Math.max(n("retire"),n("age")+1)-n("age"));
+
+    /* Overtime is W-2 wages: the employer still pays half of Social Security, so it keeps
+       roughly 8 points more than the self-employed streams below. */
+    var w2keep=1-Math.max(0,n("sidetax")-SE_SURCHARGE)/100;
+    var otHrs=n("ot"), otRate=rate*OT_MULT;
+    var otGross=otHrs*otRate*52/12, otNet=otGross*w2keep, otTime=otHrs*52/12;
+
+    var reQty=n("re"), reGross=reQty*n("reprofit"), reNet=reGross*keep, reTime=reQty*HRS_PER_ITEM;
+
+    var ctHrs=n("ct"), ctRate=rate*CT_MULT;
+    var ctGross=ctHrs*ctRate, ctNet=ctGross*keep, ctTime=ctHrs;
+
+    var side=otNet+reNet+ctNet;
+    var totalNet=n("net")+side;
+    var bills=n("bills");
+    var surplus=Math.max(0,totalNet-bills);
+    var invest=Math.min(n("invest"),surplus);
+
+    return {rate:rate,years:years,r:n("ret")/100,keep:keep,w2keep:w2keep,
+      ot:{hrs:otHrs,rate:otRate,gross:otGross,net:otNet,time:otTime},
+      re:{qty:reQty,gross:reGross,net:reNet,time:reTime},
+      ct:{hrs:ctHrs,rate:ctRate,gross:ctGross,net:ctNet,time:ctTime},
+      side:side, totalNet:totalNet, bills:bills, surplus:surplus,
+      invest:invest, spare:surplus-invest,
+      extraTime:otTime+reTime+ctTime};
+  }
+
+  /* ---------- chart ---------- */
+  var W=700,H=290,P={t:16,r:60,b:32,l:58};
+  function drawChart(m){
+    var svg=$("chart"), yrs=Math.max(1,Math.round(m.years)), pts=[], i;
+    for(i=0;i<=yrs;i++) pts.push({c:m.invest*12*i, t:fv(m.invest,m.r,i)});
+    var hi=Math.max(pts[yrs].t,1)*1.06;
+    var iw=W-P.l-P.r, ih=H-P.t-P.b;
+    var X=function(k){return P.l+(k/yrs)*iw}, Y=function(v){return P.t+ih-(v/hi)*ih};
+
+    var cs=getComputedStyle(document.documentElement);
+    var cLine=cs.getPropertyValue("--line").trim(), cInk3=cs.getPropertyValue("--ink-3").trim();
+    var cSurf=cs.getPropertyValue("--surface").trim();
+    var cIn=cs.getPropertyValue("--put-in").trim(), cGr=cs.getPropertyValue("--growth").trim();
+
+    var s="",gv,gy;
+    for(i=0;i<=4;i++){
+      gv=hi*(i/4); gy=Y(gv);
+      s+='<line x1="'+P.l+'" y1="'+gy.toFixed(1)+'" x2="'+(W-P.r)+'" y2="'+gy.toFixed(1)+'" stroke="'+cLine+'" stroke-width="1"/>';
+      s+='<text x="'+(P.l-9)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" fill="'+cInk3+
+         '" font-size="11" font-family="IBM Plex Mono, monospace">'+big(gv).replace("$","")+'</text>';
+    }
+    var xs=yrs<=10?2:yrs<=20?5:yrs<=40?10:15;
+    for(i=0;i<=yrs;i+=xs){
+      s+='<text x="'+X(i).toFixed(1)+'" y="'+(H-P.b+19)+'" text-anchor="middle" fill="'+cInk3+
+         '" font-size="11" font-family="IBM Plex Mono, monospace">'+(i===0?"now":"+"+i+"y")+'</text>';
+    }
+    function band(lowKey,highKey,fill,op){
+      var d="",j;
+      for(j=0;j<=yrs;j++) d+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j][highKey]).toFixed(1);
+      for(j=yrs;j>=0;j--) d+="L"+X(j).toFixed(1)+" "+Y(lowKey?pts[j][lowKey]:0).toFixed(1);
+      return '<path d="'+d+'Z" fill="'+fill+'" opacity="'+op+'"/>';
+    }
+    s+=band("c","t",cGr,"0.85");
+    s+=band(null,"c",cIn,"0.95");
+    var db="",dt="",j;
+    for(j=0;j<=yrs;j++){
+      db+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j].c).toFixed(1);
+      dt+=(j===0?"M":"L")+X(j).toFixed(1)+" "+Y(pts[j].t).toFixed(1);
+    }
+    /* 2px surface gap keeps the two fills from touching */
+    s+='<path d="'+db+'" fill="none" stroke="'+cSurf+'" stroke-width="2"/>';
+    s+='<path d="'+dt+'" fill="none" stroke="'+cGr+'" stroke-width="2" stroke-linejoin="round"/>';
+    s+='<circle cx="'+X(yrs).toFixed(1)+'" cy="'+Y(pts[yrs].t).toFixed(1)+'" r="4.5" fill="'+cGr+'" stroke="'+cSurf+'" stroke-width="2"/>';
+    s+='<text x="'+(W-P.r+8)+'" y="'+(Y(pts[yrs].t)+4).toFixed(1)+'" fill="'+cGr+
+       '" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace">'+big(pts[yrs].t)+'</text>';
+    for(i=0;i<=yrs;i++){
+      s+='<rect class="hit" data-i="'+i+'" x="'+(X(i)-iw/yrs/2).toFixed(1)+'" y="'+P.t+
+         '" width="'+(iw/yrs).toFixed(1)+'" height="'+ih+'" fill="transparent"/>';
+    }
+    svg.innerHTML=s; svg.__p=pts; svg.__X=X; svg.__Y=Y;
+    $("chart-desc").textContent="Stacked area chart over "+yrs+" years. Contributions reach "+
+      money(pts[yrs].c)+" and total value reaches "+money(pts[yrs].t)+".";
+  }
+
+  var tip=$("tip"), box=$("chart-box");
+  $("chart").addEventListener("mousemove",function(ev){
+    var t=ev.target; if(!t.classList||!t.classList.contains("hit"))return;
+    var svg=$("chart"), i=+t.getAttribute("data-i"), p=svg.__p[i]; if(!p)return;
+    var rect=box.getBoundingClientRect(), sc=rect.width/W;
+    tip.innerHTML=(i===0?"Today":"In "+i+(i===1?" year":" years"))+"<strong>"+money(p.t)+
+      "</strong><em>"+money(p.c)+" in &middot; "+money(p.t-p.c)+" growth</em>";
+    tip.style.opacity="1";
+    var tw=tip.offsetWidth;
+    tip.style.left=Math.max(0,Math.min(rect.width-tw,svg.__X(i)*sc-tw/2))+"px";
+    tip.style.top=Math.max(0,svg.__Y(p.t)*sc-tip.offsetHeight-12)+"px";
+  });
+  $("chart").addEventListener("mouseleave",function(){tip.style.opacity="0"});
+
+  /* ---------- render ---------- */
+  function render(){
+    var m=model();
+    var perDollar=fv(1,m.r,m.years);   /* what $1/month becomes over the horizon */
+
+    /* --- streams --- */
+    $("s-age").textContent=$("retire").value;
+    $("ot-rate").textContent=money(m.ot.rate);
+    $("ct-base").textContent=Math.round(m.rate);
+    $("ct-rate").textContent=money(m.ct.rate);
+    $("re-cap").textContent=money(m.re.qty*INV_PER_ITEM);
+
+    function setStream(id,st){
+      $(id+"-by60").innerHTML=big(fv(st.net,m.r,m.years))+
+        "<small>by "+$("retire").value+" if invested</small>";
+      $(id+"-mo").innerHTML=st.net>0
+        ? money(st.net)+"<small>net /mo &middot; "+money(st.net/st.time)+"/hr &middot; "+
+          Math.round(st.time)+" hrs</small>"
+        : '<span style="color:var(--ink-3);font-weight:400">not running</span>';
+    }
+    setStream("ot",m.ot); setStream("re",m.re); setStream("ct",m.ct);
+
+    /* dividends: yield on the projected balance, not on today's balance */
+    var finalBal=fv(m.invest,m.r,m.years);
+    var dy=n("divyield")/100;
+    $("div-by60").innerHTML=money(finalBal*dy/12)+"<small>per month, at "+$("retire").value+"</small>";
+    var nowBal=fv(m.invest,m.r,1);
+    $("div-now").textContent=money(nowBal*dy/12)+" a month";
+    $("div-mo").innerHTML=money(nowBal*dy/12)+"<small>net /mo after a year &middot; 0 hrs</small>";
+
+    $("t-month").textContent=money(m.side);
+    $("t-by60").textContent=big(fv(m.side,m.r,m.years));
+
+    /* effective hourly band across the three time-based streams */
+    var rates=[];
+    if(m.ot.time>0) rates.push(m.ot.net/m.ot.time);
+    if(m.re.time>0) rates.push(m.re.net/m.re.time);
+    if(m.ct.time>0) rates.push(m.ct.net/m.ct.time);
+    if(rates.length){
+      var lo=Math.min.apply(null,rates), hi2=Math.max.apply(null,rates);
+      $("hr-band").textContent=(lo===hi2?money(lo):money(lo)+"–"+money(hi2))+" an hour";
+    } else $("hr-band").textContent="nothing yet — every stream is set to zero";
+    $("extra-hrs").textContent=Math.round(m.extraTime)+" hours a month";
+    $("week-hrs").textContent=Math.round(40+m.extraTime*12/52)+"-hour week";
+    $("ct-now").textContent=money(m.ct.net);
+
+    /* --- dial --- */
+    var sl=$("invest");
+    sl.max=Math.max(25,Math.round(m.surplus/25)*25);
+    if(+sl.value>+sl.max) sl.value=sl.max;
+    m=model();
+    $("sc-mid").textContent=money(Math.round(m.surplus/2));
+    $("sc-max").textContent=money(m.surplus)+" max";
+    $("v-invest").innerHTML=money(m.invest)+' <small>invested per month</small>';
+
+    var f=$("flow").children;
+    var segs=[[m.bills,"Bills","background:var(--line-strong)"],
+              [m.invest,"Invested","background:var(--put-in)"],
+              [m.spare,"Spare","background:var(--good)"]];
+    segs.forEach(function(seg,k){
+      f[k].hidden=seg[0]<=0;
+      f[k].style.flexGrow=Math.max(seg[0],0);
+      f[k].querySelector("span").textContent=seg[1];
+    });
+    $("flow-key").innerHTML=segs.map(function(seg){
+      return '<b><span class="sw" style="'+seg[2]+'"></span>'+seg[1]+' '+money(seg[0])+'</b>';
+    }).join("")+'<b style="color:var(--ink-3)">of '+money(m.totalNet)+' total take-home</b>';
+    $("flow-desc").textContent="Of "+money(m.totalNet)+" take-home each month, "+money(m.bills)+
+      " goes to bills, "+money(m.invest)+" is invested and "+money(m.spare)+" is left spare.";
+
+    /* --- payoff --- */
+    var put=m.invest*12*m.years;
+    $("ret-age").textContent=$("retire").value;
+    $("v-final").textContent=big(finalBal);
+    $("m-in").textContent=money(put);
+    $("m-growth").textContent=money(Math.max(0,finalBal-put));
+    $("m-10").textContent=money(fv(m.invest,m.r,Math.min(10,m.years)));
+    $("m-20").textContent=money(fv(m.invest,m.r,Math.min(20,m.years)));
+    $("s-final").textContent=m.invest>0
+      ? "Investing "+money(m.invest)+" every month for "+Math.round(m.years)+" years at "+
+        (m.r*100).toFixed(1)+"% a year, in today's buying power."
+      : "Move the dial. At $0 a month the machine never gets built.";
+
+    /* --- accounts --- */
+    var ef=m.bills*3;
+    $("a-ef").innerHTML=money(ef)+"<small>"+
+      (m.surplus>0?"about "+Math.max(1,Math.ceil(ef/m.surplus))+" months to fill":"target")+"</small>";
+    var rothMo=Math.min(m.invest,ROTH_LIMIT/12);
+    $("a-roth").innerHTML=money(rothMo)+"<small>per month</small>";
+    $("a-brok").innerHTML=money(Math.max(0,m.invest-rothMo))+"<small>per month</small>";
+
+    $("cap").textContent="Blue is your own money going in; orange is growth stacked on top. The point "+
+      "where orange overtakes blue is when the machine starts out-earning what you feed it.";
+
+    drawChart(m); save();
+  }
+
+  load();
+  FIELDS.forEach(function(f){var e=$(f); if(e)e.addEventListener("input",render)});
+  render();
+  window.addEventListener("resize",function(){drawChart(model())});
+  if(window.matchMedia){
+    var mq=window.matchMedia("(prefers-color-scheme: dark)");
+    if(mq.addEventListener) mq.addEventListener("change",function(){drawChart(model())});
+  }
+  new MutationObserver(function(){drawChart(model())})
+    .observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script>
